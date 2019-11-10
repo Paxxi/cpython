@@ -2,9 +2,13 @@
 #include "pycore_initconfig.h"
 #ifdef MS_WINDOWS
 #  include <windows.h>
+#if MS_DESKTOP
 /* All sample MSDN wincrypt programs include the header below. It is at least
  * required with Min GW. */
 #  include <wincrypt.h>
+#else
+#  include <windows.security.cryptography.h>
+#endif
 #else
 #  include <fcntl.h>
 #  ifdef HAVE_SYS_STAT_H
@@ -56,6 +60,7 @@ error:
 static int
 win32_urandom(unsigned char *buffer, Py_ssize_t size, int raise)
 {
+#if MS_DESKTOP
     if (hCryptProv == 0)
     {
         if (win32_urandom_init(raise) == -1) {
@@ -78,6 +83,9 @@ win32_urandom(unsigned char *buffer, Py_ssize_t size, int raise)
         size -= chunk;
     }
     return 0;
+#else
+	return uwp_urandom(buffer, size, raise);
+#endif
 }
 
 #else /* !MS_WINDOWS */

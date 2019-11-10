@@ -17,6 +17,7 @@
 #include "structmember.h"
 #include "windows.h"
 
+#if MS_DESKTOP
 static BOOL PyHKEY_AsHKEY(PyObject *ob, HKEY *pRes, BOOL bNoneOK);
 static BOOL clinic_HKEY_converter(PyObject *ob, void *p);
 static PyObject *PyHKEY_FromHKEY(HKEY h);
@@ -1982,3 +1983,4 @@ PyMODINIT_FUNC PyInit_winreg(void)
 }
 
 
+#endif

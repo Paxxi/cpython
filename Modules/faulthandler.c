@@ -508,7 +508,7 @@ faulthandler_enable(void)
         handler->enabled = 1;
     }
 
-#ifdef MS_WINDOWS
+#if defined(MS_WINDOWS) && defined(MS_DESKTOP)
     assert(fatal_error.exc_handler == NULL);
     fatal_error.exc_handler = AddVectoredExceptionHandler(1, faulthandler_exc_handler);
 #endif
@@ -560,7 +560,7 @@ faulthandler_disable(void)
             faulthandler_disable_fatal_handler(handler);
         }
     }
-#ifdef MS_WINDOWS
+#if defined(MS_WINDOWS) && MS_DESKTOP
     if (fatal_error.exc_handler != NULL) {
         RemoveVectoredExceptionHandler(fatal_error.exc_handler);
         fatal_error.exc_handler = NULL;
@@ -987,7 +987,7 @@ faulthandler_unregister_py(PyObject *self, PyObject *args)
 static void
 faulthandler_suppress_crash_report(void)
 {
-#ifdef MS_WINDOWS
+#if defined(MS_WINDOWS) && MS_DESKTOP
     UINT mode;
 
     /* Configure Windows to not display the Windows Error Reporting dialog */

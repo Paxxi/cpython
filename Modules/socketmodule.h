@@ -69,7 +69,7 @@ struct SOCKADDR_BTH_REDEF {
  * I use SIO_GET_MULTICAST_FILTER to detect a decent SDK.
  */
 # ifdef SIO_GET_MULTICAST_FILTER
-#  include <mstcpip.h> /* for SIO_RCVALL */
+//#  include <mstcpip.h> /* for SIO_RCVALL */
 #  define HAVE_ADDRINFO
 #  define HAVE_SOCKADDR_STORAGE
 #  define HAVE_GETADDRINFO

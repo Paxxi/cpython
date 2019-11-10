@@ -1,6 +1,10 @@
 #include "Python.h"
 #ifdef MS_WINDOWS
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1
+#endif
 #include <windows.h>
+#include <WinSock2.h>
 #endif
 
 #if defined(__APPLE__)
@@ -671,6 +675,7 @@ pygettimeofday(_PyTime_t *tp, _Py_clock_info_t *info, int raise)
 
         info->implementation = "GetSystemTimeAsFileTime()";
         info->monotonic = 0;
+#if MS_DESKTOP
         ok = GetSystemTimeAdjustment(&timeAdjustment, &timeIncrement,
                                      &isTimeAdjustmentDisabled);
         if (!ok) {
@@ -679,6 +684,7 @@ pygettimeofday(_PyTime_t *tp, _Py_clock_info_t *info, int raise)
         }
         info->resolution = timeIncrement * 1e-7;
         info->adjustable = 1;
+#endif
     }
 
 #else   /* MS_WINDOWS */
@@ -785,6 +791,7 @@ pymonotonic(_PyTime_t *tp, _Py_clock_info_t *info, int raise)
         BOOL isTimeAdjustmentDisabled, ok;
         info->implementation = "GetTickCount64()";
         info->monotonic = 1;
+#if MS_DESKTOP
         ok = GetSystemTimeAdjustment(&timeAdjustment, &timeIncrement,
                                      &isTimeAdjustmentDisabled);
         if (!ok) {
@@ -792,6 +799,7 @@ pymonotonic(_PyTime_t *tp, _Py_clock_info_t *info, int raise)
             return -1;
         }
         info->resolution = timeIncrement * 1e-7;
+#endif
         info->adjustable = 0;
     }
 

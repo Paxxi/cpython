@@ -22,6 +22,8 @@
     <MinimumVisualStudioVersion Condition="'$(IsUwp)' == 'true'">14.0</MinimumVisualStudioVersion>
     <WindowsTargetPlatformVersion Condition="'$(IsUwp)' == 'true'">10.0.17763.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion Condition="'$(IsUwp)' == 'true'">10.0.15063.0</WindowsTargetPlatformMinVersion>
+    <TargetPlatformVersion Condition="'$(IsUwp)' == 'true'">10.0.17763.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion Condition="'$(IsUwp)' == 'true'">10.0.15063.0</TargetPlatformMinVersion>
     <ApplicationTypeRevision Condition="'$(IsUwp)' == 'true'">10.0</ApplicationTypeRevision>
   </PropertyGroup>
 
@@ -54,6 +56,8 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <InlineFunctionExpansion Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">OnlyExplicitInline</InlineFunctionExpansion>
       <InlineFunctionExpansion Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">OnlyExplicitInline</InlineFunctionExpansion>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Condition="$(Configuration) == 'Debug'">
       <Optimization>Disabled</Optimization>
@@ -74,6 +78,7 @@
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries Condition="'$(IsUwp)' == 'true'">msvcrt;msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <TargetMachine>MachineX86</TargetMachine>
       <TargetMachine Condition="'$(Platform)' == 'x64'">MachineX64</TargetMachine>
       <TargetMachine Condition="'$(Platform)'=='ARM'">MachineARM</TargetMachine>
@@ -83,6 +88,8 @@
       <LinkTimeCodeGeneration Condition="$(SupportPGO) and $(Configuration) == 'PGInstrument'">PGInstrument</LinkTimeCodeGeneration>
       <LinkTimeCodeGeneration Condition="$(SupportPGO) and $(Configuration) == 'PGUpdate'">PGUpdate</LinkTimeCodeGeneration>
       <AdditionalDependencies>advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)' == 'Debug-UWP'">vccorlibd.lib;ucrtd.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)' != 'Debug-UWP' and '$(IsUwp)' == 'true'">vccorlib.lib;ucrt.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
       <LinkTimeCodeGeneration Condition="$(Configuration) == 'Release'">true</LinkTimeCodeGeneration>

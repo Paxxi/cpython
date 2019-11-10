@@ -369,6 +369,7 @@ static FlagRuntimeInfo win_runtime_flags[] = {
 static void
 remove_unusable_flags(PyObject *m)
 {
+#if MS_DESKTOP
     PyObject *dict;
     OSVERSIONINFOEX info;
     DWORDLONG dwlConditionMask;
@@ -414,6 +415,7 @@ remove_unusable_flags(PyObject *m)
             }
         }
     }
+#endif
 }
 
 #endif
@@ -523,10 +525,12 @@ remove_unusable_flags(PyObject *m)
 #ifdef MS_WINDOWS
 #define sockaddr_rc SOCKADDR_BTH_REDEF
 
+#if MS_DESKTOP
 #define USE_BLUETOOTH 1
 #define AF_BLUETOOTH AF_BTH
 #define BTPROTO_RFCOMM BTHPROTO_RFCOMM
 #define _BT_RC_MEMB(sa, memb) ((sa)->memb)
+#endif
 #endif
 
 /* Convert "sock_addr_t *" to "struct sockaddr *". */
@@ -2714,11 +2718,13 @@ sock_accept(PySocketSockObject *s, PyObject *Py_UNUSED(ignored))
     newfd = ctx.result;
 
 #ifdef MS_WINDOWS
+#if MS_DESKTOP
     if (!SetHandleInformation((HANDLE)newfd, HANDLE_FLAG_INHERIT, 0)) {
         PyErr_SetFromWindowsErr(0);
         SOCKETCLOSE(newfd);
         goto finally;
     }
+#endif
 #else
 
 #if defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC)
@@ -5256,11 +5262,13 @@ sock_initobj(PyObject *self, PyObject *args, PyObject *kwds)
         }
 
         if (!support_wsa_no_inherit) {
+#if MS_DESKTOP
             if (!SetHandleInformation((HANDLE)fd, HANDLE_FLAG_INHERIT, 0)) {
                 closesocket(fd);
                 PyErr_SetFromWindowsErr(0);
                 return -1;
             }
+#endif
         }
 #else
         /* UNIX */
@@ -5371,7 +5379,7 @@ socket_gethostname(PyObject *self, PyObject *unused)
         return NULL;
     }
 
-#ifdef MS_WINDOWS
+#if defined(MS_WINDOWS) && MS_DESKTOP
     /* Don't use winsock's gethostname, as this returns the ANSI
        version of the hostname, whereas we need a Unicode string.
        Otherwise, gethostname apparently also returns the DNS name. */
@@ -5964,11 +5972,13 @@ socket_dup(PyObject *self, PyObject *fdobj)
     if (newfd == INVALID_SOCKET)
         return set_error();
 
+#if MS_DESKTOP
     if (!SetHandleInformation((HANDLE)newfd, HANDLE_FLAG_INHERIT, 0)) {
         closesocket(newfd);
         PyErr_SetFromWindowsErr(0);
         return NULL;
     }
+#endif
 #else
     /* On UNIX, dup can be used to duplicate the file descriptor of a socket */
     newfd = _Py_dup(fd);
@@ -7096,7 +7106,11 @@ PyInit__socket(void)
 
 #ifdef MS_WINDOWS
     if (support_wsa_no_inherit == -1) {
+#if MS_DESKTOP
         support_wsa_no_inherit = IsWindows7SP1OrGreater();
+#else
+		support_wsa_no_inherit = 1;
+#endif
     }
 #endif
 

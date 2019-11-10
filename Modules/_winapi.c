@@ -61,24 +61,6 @@
 
 #define T_HANDLE T_POINTER
 
-/* Grab CancelIoEx dynamically from kernel32 */
-static int has_CancelIoEx = -1;
-static BOOL (CALLBACK *Py_CancelIoEx)(HANDLE, LPOVERLAPPED);
-
-static int
-check_CancelIoEx()
-{
-    if (has_CancelIoEx == -1)
-    {
-        HINSTANCE hKernel32 = GetModuleHandle("KERNEL32");
-        * (FARPROC *) &Py_CancelIoEx = GetProcAddress(hKernel32,
-                                                      "CancelIoEx");
-        has_CancelIoEx = (Py_CancelIoEx != NULL);
-    }
-    return has_CancelIoEx;
-}
-
-
 /*
  * A Python object wrapping an OVERLAPPED structure and other useful data
  * for overlapped I/O
@@ -106,8 +88,7 @@ overlapped_dealloc(OverlappedObject *self)
     int err = GetLastError();
 
     if (self->pending) {
-        if (check_CancelIoEx() &&
-            Py_CancelIoEx(self->handle, &self->overlapped) &&
+        if (CancelIoEx(self->handle, &self->overlapped) &&
             GetOverlappedResult(self->handle, &self->overlapped, &bytes, TRUE))
         {
             /* The operation is no longer pending -- nothing to do. */
@@ -276,10 +257,7 @@ _winapi_Overlapped_cancel_impl(OverlappedObject *self)
 
     if (self->pending) {
         Py_BEGIN_ALLOW_THREADS
-        if (check_CancelIoEx())
-            res = Py_CancelIoEx(self->handle, &self->overlapped);
-        else
-            res = CancelIo(self->handle);
+            res = CancelIoEx(self->handle, &self->overlapped);
         Py_END_ALLOW_THREADS
     }
 
@@ -467,11 +445,20 @@ _winapi_CreateFile_impl(PyObject *module, LPCTSTR file_name,
         return INVALID_HANDLE_VALUE;
     }
 
-    Py_BEGIN_ALLOW_THREADS
-    handle = CreateFile(file_name, desired_access,
-                        share_mode, security_attributes,
-                        creation_disposition,
-                        flags_and_attributes, template_file);
+	Py_BEGIN_ALLOW_THREADS
+#ifdef MS_DESKTOP
+		handle = CreateFile(file_name, desired_access,
+			share_mode, security_attributes,
+			creation_disposition,
+			flags_and_attributes, template_file);
+#else
+		CREATEFILE2_EXTENDED_PARAMETERS extended;
+		extended.dwSize = sizeof(CREATEFILE2_EXTENDED_PARAMETERS);
+		extended.hTemplateFile = template_file;
+		extended.lpSecurityAttributes = security_attributes;
+		handle = CreateFile2(file_name, desired_access,
+			share_mode, creation_disposition, &extended);
+#endif
     Py_END_ALLOW_THREADS
 
     if (handle == INVALID_HANDLE_VALUE)
@@ -530,6 +517,9 @@ _winapi_CreateJunction_impl(PyObject *module, LPWSTR src_path,
                             LPWSTR dst_path)
 /*[clinic end generated code: output=66b7eb746e1dfa25 input=8cd1f9964b6e3d36]*/
 {
+#ifdef MS_APP
+	Py_RETURN_NOTIMPLEMENTED;
+#else
     /* Privilege adjustment */
     HANDLE token = NULL;
     TOKEN_PRIVILEGES tp;
@@ -656,6 +646,7 @@ cleanup:
         return PyErr_SetFromWindowsErr(ret);
 
     Py_RETURN_NONE;
+#endif
 }
 
 /*[clinic input]
@@ -923,7 +914,7 @@ cleanup:
     Py_XDECREF(value_fast);
     return ret;
 }
-
+#if MS_DESKTOP
 typedef struct {
     LPPROC_THREAD_ATTRIBUTE_LIST attribute_list;
     LPHANDLE handle_list;
@@ -1151,6 +1142,8 @@ cleanup:
     return ret;
 }
 
+#endif
+
 /*[clinic input]
 _winapi.DuplicateHandle -> HANDLE
 
@@ -1351,7 +1344,17 @@ _winapi_GetVersion_impl(PyObject *module)
 #pragma warning(disable:4996)
 
 {
-    return GetVersion();
+	DWORD version;
+	OSVERSIONINFOEXW version_info;
+	version_info.dwOSVersionInfoSize = sizeof(version_info);
+
+	if (GetVersionExW(&version_info)) {
+		return version_info.dwMinorVersion |
+			(version_info.dwMajorVersion << 8) |
+			(version_info.dwBuildNumber << 16);
+	}
+	
+	return 0;
 }
 
 #pragma warning(pop)
@@ -1886,8 +1889,10 @@ static PyMethodDef winapi_functions[] = {
     _WINAPI_CREATEFILEMAPPING_METHODDEF
     _WINAPI_CREATENAMEDPIPE_METHODDEF
     _WINAPI_CREATEPIPE_METHODDEF
+#if MS_DESKTOP
     _WINAPI_CREATEPROCESS_METHODDEF
     _WINAPI_CREATEJUNCTION_METHODDEF
+#endif
     _WINAPI_DUPLICATEHANDLE_METHODDEF
     _WINAPI_EXITPROCESS_METHODDEF
     _WINAPI_GETCURRENTPROCESS_METHODDEF
@@ -2004,14 +2009,15 @@ PyInit__winapi(void)
     WINAPI_CONSTANT(F_DWORD, PROCESS_ALL_ACCESS);
     WINAPI_CONSTANT(F_DWORD, SYNCHRONIZE);
     WINAPI_CONSTANT(F_DWORD, PROCESS_DUP_HANDLE);
-    WINAPI_CONSTANT(F_DWORD, SEC_COMMIT);
     WINAPI_CONSTANT(F_DWORD, SEC_IMAGE);
     WINAPI_CONSTANT(F_DWORD, SEC_LARGE_PAGES);
     WINAPI_CONSTANT(F_DWORD, SEC_NOCACHE);
     WINAPI_CONSTANT(F_DWORD, SEC_RESERVE);
     WINAPI_CONSTANT(F_DWORD, SEC_WRITECOMBINE);
+#if MS_DESKTOP
     WINAPI_CONSTANT(F_DWORD, STARTF_USESHOWWINDOW);
     WINAPI_CONSTANT(F_DWORD, STARTF_USESTDHANDLES);
+#endif
     WINAPI_CONSTANT(F_DWORD, STD_INPUT_HANDLE);
     WINAPI_CONSTANT(F_DWORD, STD_OUTPUT_HANDLE);
     WINAPI_CONSTANT(F_DWORD, STD_ERROR_HANDLE);

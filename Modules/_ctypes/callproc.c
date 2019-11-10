@@ -814,7 +814,7 @@ static int _call_function_pointer(int flags,
     }
 
     cc = FFI_DEFAULT_ABI;
-#if defined(MS_WIN32) && !defined(MS_WIN64) && !defined(_WIN32_WCE) && !defined(_M_ARM)
+#if defined(MS_WIN32) && defined(_M_IX86) && !defined(_WIN32_WCE)
     if ((flags & FUNCFLAG_CDECL) == 0)
         cc = FFI_STDCALL;
 #endif
@@ -978,6 +978,7 @@ error:
 
 
 #ifdef MS_WIN32
+#if MS_DESKTOP
 
 static PyObject *
 GetComError(HRESULT errcode, GUID *riid, IUnknown *pIunk)
@@ -1046,6 +1047,7 @@ GetComError(HRESULT errcode, GUID *riid, IUnknown *pIunk)
 
     return NULL;
 }
+#endif
 #endif
 
 #if (defined(__x86_64__) && (defined(__MINGW64__) || defined(__CYGWIN__))) || \
@@ -1204,9 +1206,11 @@ PyObject *_ctypes_callproc(PPROC pProc,
 
 #ifdef MS_WIN32
     if (iid && pIunk) {
+#if MS_DESKTOP
         if (*(int *)resbuf & 0x80000000)
             retval = GetComError(*(HRESULT *)resbuf, iid, pIunk);
         else
+#endif
             retval = PyLong_FromLong(*(int *)resbuf);
     } else if (flags & FUNCFLAG_HRESULT) {
         if (*(int *)resbuf & 0x80000000)

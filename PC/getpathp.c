@@ -251,6 +251,7 @@ static PPathCchCombineEx _PathCchCombineEx;
 static void
 join(wchar_t *buffer, const wchar_t *stuff)
 {
+#ifdef MS_DESKTOP
     if (_PathCchCombineEx_Initialized == 0) {
         HMODULE pathapi = LoadLibraryW(L"api-ms-win-core-path-l1-1-0.dll");
         if (pathapi) {
@@ -271,6 +272,11 @@ join(wchar_t *buffer, const wchar_t *stuff)
             Py_FatalError("buffer overflow in getpathp.c's join()");
         }
     }
+#else
+	if (!PathCchCombineEx(buffer, buffer, stuff)) {
+		Py_FatalError("buffer overflow in getpathp.c's join()");
+	}
+#endif
 }
 
 static int _PathCchCanonicalizeEx_Initialized = 0;
@@ -287,6 +293,7 @@ canonicalize(wchar_t *buffer, const wchar_t *path)
         return _PyStatus_NO_MEMORY();
     }
 
+#ifdef MS_DESKTOP
     if (_PathCchCanonicalizeEx_Initialized == 0) {
         HMODULE pathapi = LoadLibraryW(L"api-ms-win-core-path-l1-1-0.dll");
         if (pathapi) {
@@ -308,6 +315,11 @@ canonicalize(wchar_t *buffer, const wchar_t *path)
             return INIT_ERR_BUFFER_OVERFLOW();
         }
     }
+#else
+	if (FAILED(PathCchCanonicalizeEx(buffer, MAXPATHLEN + 1, path, 0))) {
+		return INIT_ERR_BUFFER_OVERFLOW();
+	}
+#endif
     return _PyStatus_OK();
 }
 
@@ -360,9 +372,11 @@ extern const char *PyWin_DLLVersionString;
    work on Win16, where the buffer sizes werent available
    in advance.  It could be simplied now Win16/Win32s is dead!
 */
+
 static wchar_t *
 getpythonregpath(HKEY keyBase, int skipcore)
 {
+#if MS_DESKTOP
     HKEY newKey = 0;
     DWORD dataSize = 0;
     DWORD numKeys = 0;
@@ -511,6 +525,9 @@ done:
     }
     PyMem_RawFree(keyBuf);
     return retval;
+#else
+	return NULL;
+#endif
 }
 #endif /* Py_ENABLE_SHARED */
 
@@ -1152,10 +1169,11 @@ done:
    Return whether the DLL was found.
 */
 static int python3_checked = 0;
-static HANDLE hPython3;
+static HANDLE hPython3 = (HANDLE)NULL;
 int
 _Py_CheckPython3(void)
 {
+#if MS_DESKTOP
     wchar_t py3path[MAXPATHLEN+1];
     wchar_t *s;
     if (python3_checked) {
@@ -1186,4 +1204,7 @@ _Py_CheckPython3(void)
     wcscat(py3path, L"\\DLLs\\python3.dll");
     hPython3 = LoadLibraryExW(py3path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
     return hPython3 != NULL;
+#else
+	return 0;
+#endif
 }
