@@ -1,6 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug-UWP|ARM">
+      <Configuration>Debug-UWP</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug-UWP|ARM64">
+      <Configuration>Debug-UWP</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug-UWP|Win32">
+      <Configuration>Debug-UWP</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug-UWP|x64">
+      <Configuration>Debug-UWP</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|ARM">
       <Configuration>Debug</Configuration>
       <Platform>ARM</Platform>
@@ -15,6 +31,22 @@
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="PGInstrument-UWP|ARM">
+      <Configuration>PGInstrument-UWP</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="PGInstrument-UWP|ARM64">
+      <Configuration>PGInstrument-UWP</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="PGInstrument-UWP|Win32">
+      <Configuration>PGInstrument-UWP</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="PGInstrument-UWP|x64">
+      <Configuration>PGInstrument-UWP</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="PGInstrument|ARM">
@@ -33,6 +65,22 @@
       <Configuration>PGInstrument</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="PGUpdate-UWP|ARM">
+      <Configuration>PGUpdate-UWP</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="PGUpdate-UWP|ARM64">
+      <Configuration>PGUpdate-UWP</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="PGUpdate-UWP|Win32">
+      <Configuration>PGUpdate-UWP</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="PGUpdate-UWP|x64">
+      <Configuration>PGUpdate-UWP</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="PGUpdate|ARM">
       <Configuration>PGUpdate</Configuration>
       <Platform>ARM</Platform>
@@ -47,6 +95,22 @@
     </ProjectConfiguration>
     <ProjectConfiguration Include="PGUpdate|x64">
       <Configuration>PGUpdate</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-UWP|ARM">
+      <Configuration>Release-UWP</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-UWP|ARM64">
+      <Configuration>Release-UWP</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-UWP|Win32">
+      <Configuration>Release-UWP</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release-UWP|x64">
+      <Configuration>Release-UWP</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|ARM">
@@ -66,13 +130,22 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <!--
+    Import of python.props must be before the globals section or
+    the condition will always fail.
+    <AppContainerApplication> and <ApplicationType> must be in the
+    project files, for some reason it doesn't work if they're put
+    in any of the props files
+  -->
+  <Import Project="python.props" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FDB84CBB-2FB6-47C8-A2D6-091E0833239D}</ProjectGuid>
     <RootNamespace>venvwlauncher</RootNamespace>
     <TargetName>venvwlauncher</TargetName>
     <SupportPGO>false</SupportPGO>
+    <AppContainerApplication Condition="'$(IsUwp)' == 'true'">true</AppContainerApplication>
+    <ApplicationType Condition="'$(IsUwp)' == 'true'">Windows Store</ApplicationType>
   </PropertyGroup>
-  <Import Project="python.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>

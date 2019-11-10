@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
       <UniqueIdentifier>{f53a859d-dad2-4d5b-ae41-f28d8b571f5a}</UniqueIdentifier>
@@ -44,5 +44,8 @@
     <ClInclude Include="$(bz2Dir)\bzlib_private.h">
       <Filter>bzip2 1.0.6 Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\PC\python_nt.rc" />
   </ItemGroup>
 </Project>

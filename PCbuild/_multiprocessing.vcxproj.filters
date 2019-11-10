@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Header Files">
       <UniqueIdentifier>{623c956c-1893-43d9-a7dc-96e4fef20f93}</UniqueIdentifier>
@@ -20,5 +20,8 @@
     <ClCompile Include="..\Modules\_multiprocessing\semaphore.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\PC\python_nt.rc" />
   </ItemGroup>
 </Project>

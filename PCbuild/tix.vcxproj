@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -34,13 +34,22 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <!--
+    Import of python.props must be before the globals section or
+    the condition will always fail.
+    <AppContainerApplication> and <ApplicationType> must be in the
+    project files, for some reason it doesn't work if they're put
+    in any of the props files
+  -->
+  <Import Project="python.props" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C5A3E7FB-9695-4B2E-960B-1D9F43F1E555}</ProjectGuid>
     <RootNamespace>tix</RootNamespace>
     <SupportSigning>true</SupportSigning>
+    <AppContainerApplication Condition="'$(IsUwp)' == 'true'">true</AppContainerApplication>
+    <ApplicationType Condition="'$(IsUwp)' == 'true'">Windows Store</ApplicationType>
   </PropertyGroup>
 
-  <Import Project="python.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="tcltk.props" />
   

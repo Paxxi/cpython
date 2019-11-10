@@ -30,6 +30,9 @@
     <ArchName Condition="'$(ArchName)' == '' and $(Platform) == 'ARM'">arm32</ArchName>
     <ArchName Condition="'$(ArchName)' == '' and $(Platform) == 'ARM64'">arm64</ArchName>
     <ArchName Condition="'$(ArchName)' == ''">win32</ArchName>
+
+    <IsUwp>false</IsUwp>
+    <IsUwp Condition="$(Configuration.EndsWith(`UWP`))">true</IsUwp>
     
     <!-- Root directory of the repository -->
     <PySourcePath Condition="'$(PySourcePath)' == ''">$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)\..\))</PySourcePath>
