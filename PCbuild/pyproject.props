@@ -33,7 +33,7 @@
 
   <PropertyGroup>
     <_DebugPreprocessorDefinition>NDEBUG;</_DebugPreprocessorDefinition>
-    <_DebugPreprocessorDefinition Condition="$(Configuration) == 'Debug'">_DEBUG;</_DebugPreprocessorDefinition>
+    <_DebugPreprocessorDefinition Condition="'$(IsDebug)' == 'true'">_DEBUG;</_DebugPreprocessorDefinition>
     <_PlatformPreprocessorDefinition>_WIN32;</_PlatformPreprocessorDefinition>
     <_PlatformPreprocessorDefinition Condition="$(Platform) == 'x64'">_WIN64;_M_X64;</_PlatformPreprocessorDefinition>
     <_PydPreprocessorDefinition Condition="$(TargetExt) == '.pyd'">Py_BUILD_CORE_MODULE;</_PydPreprocessorDefinition>
@@ -58,8 +58,10 @@
       <InlineFunctionExpansion Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">OnlyExplicitInline</InlineFunctionExpansion>
       <CompileAsWinRT>false</CompileAsWinRT>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <!--UWP enables this by default so it's necessary to disable it explicitly-->
+      <SDLCheck>false</SDLCheck>
     </ClCompile>
-    <ClCompile Condition="$(Configuration) == 'Debug'">
+    <ClCompile Condition="$(IsDebug) == 'true'">
       <Optimization>Disabled</Optimization>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -78,7 +80,7 @@
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>LIBC;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries Condition="'$(IsUwp)' == 'true'">msvcrt;msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries Condition="'$(IsUwp)' == 'true'">vccorlib;vccorlibd;ucrt;ucrtd;msvcrt;msvcrtd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <TargetMachine>MachineX86</TargetMachine>
       <TargetMachine Condition="'$(Platform)' == 'x64'">MachineX64</TargetMachine>
       <TargetMachine Condition="'$(Platform)'=='ARM'">MachineARM</TargetMachine>

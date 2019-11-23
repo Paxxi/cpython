@@ -6731,6 +6731,7 @@ socket_if_nameindex(PyObject *self, PyObject *arg)
         return NULL;
     }
 #ifdef MS_WINDOWS
+#if MS_DESKTOP
     PMIB_IF_TABLE2 tbl;
     int ret;
     if ((ret = GetIfTable2Ex(MibIfTableRaw, &tbl)) != NO_ERROR) {
@@ -6759,6 +6760,9 @@ socket_if_nameindex(PyObject *self, PyObject *arg)
     }
     FreeMibTable(tbl);
     return list;
+#else
+	Py_RETURN_NOTIMPLEMENTED;
+#endif
 #else
     int i;
     struct if_nameindex *ni;
@@ -6841,6 +6845,9 @@ Returns the interface index corresponding to the interface name if_name.");
 static PyObject *
 socket_if_indextoname(PyObject *self, PyObject *arg)
 {
+#if MS_APP
+	Py_RETURN_NOTIMPLEMENTED;
+#else
 #ifdef MS_WINDOWS
     NET_IFINDEX index;
 #else
@@ -6858,6 +6865,7 @@ socket_if_indextoname(PyObject *self, PyObject *arg)
     }
 
     return PyUnicode_DecodeFSDefault(name);
+#endif
 }
 
 PyDoc_STRVAR(if_indextoname_doc,

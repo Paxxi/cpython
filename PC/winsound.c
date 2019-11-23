@@ -76,6 +76,9 @@ static PyObject *
 winsound_PlaySound_impl(PyObject *module, PyObject *sound, int flags)
 /*[clinic end generated code: output=49a0fd16a372ebeb input=c63e1f2d848da2f2]*/
 {
+#if MS_APP
+	Py_RETURN_NOTIMPLEMENTED;
+#else
     int ok;
     wchar_t *wsound;
     Py_buffer view = {NULL, NULL};
@@ -121,6 +124,7 @@ winsound_PlaySound_impl(PyObject *module, PyObject *sound, int flags)
         return NULL;
     }
     Py_RETURN_NONE;
+#endif
 }
 
 /*[clinic input]
@@ -172,6 +176,9 @@ static PyObject *
 winsound_MessageBeep_impl(PyObject *module, int type)
 /*[clinic end generated code: output=120875455121121f input=db185f741ae21401]*/
 {
+#if MS_APP
+	Py_RETURN_NOTIMPLEMENTED;
+#else
     BOOL ok;
 
     Py_BEGIN_ALLOW_THREADS
@@ -184,6 +191,7 @@ winsound_MessageBeep_impl(PyObject *module, int type)
     }
 
     Py_RETURN_NONE;
+#endif
 }
 
 static struct PyMethodDef sound_methods[] =
@@ -230,6 +238,7 @@ PyInit_winsound(void)
         return NULL;
     dict = PyModule_GetDict(module);
 
+#if MS_DESKTOP
     ADD_DEFINE(SND_ASYNC);
     ADD_DEFINE(SND_NODEFAULT);
     ADD_DEFINE(SND_NOSTOP);
@@ -240,6 +249,7 @@ PyInit_winsound(void)
     ADD_DEFINE(SND_PURGE);
     ADD_DEFINE(SND_LOOP);
     ADD_DEFINE(SND_APPLICATION);
+#endif
 
     ADD_DEFINE(MB_OK);
     ADD_DEFINE(MB_ICONASTERISK);

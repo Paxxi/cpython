@@ -55,4 +55,12 @@ if errorlevel 1 exit /b
 if errorlevel 1 exit /b
 %MSBUILD% "%PCBUILD%\openssl.vcxproj" /p:Configuration=Release /p:Platform=ARM64
 if errorlevel 1 exit /b
+%MSBUILD% "%PCBUILD%\openssl.vcxproj" /p:Configuration=Release-UWP /p:Platform=Win32
+if errorlevel 1 exit /b
+%MSBUILD% "%PCBUILD%\openssl.vcxproj" /p:Configuration=Release-UWP /p:Platform=x64
+if errorlevel 1 exit /b
+%MSBUILD% "%PCBUILD%\openssl.vcxproj" /p:Configuration=Release-UWP /p:Platform=ARM
+if errorlevel 1 exit /b
+%MSBUILD% "%PCBUILD%\openssl.vcxproj" /p:Configuration=Release-UWP /p:Platform=ARM64
+if errorlevel 1 exit /b
 

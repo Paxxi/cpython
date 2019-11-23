@@ -17,6 +17,22 @@
       <Configuration>Release</Configuration>
       <Platform>ARM64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32-UWP">
+      <Configuration>Release-UWP</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64-UWP">
+      <Configuration>Release-UWP</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM-UWP">
+      <Configuration>Release-UWP</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64-UWP">
+      <Configuration>Release-UWP</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B5FD6F1D-129E-4BFF-9340-03606FAC7283}</ProjectGuid>
@@ -57,6 +73,38 @@
     <SupportSigning>true</SupportSigning>
   </PropertyGroup>
 
+  <PropertyGroup Label="Configuration" Condition="$(Platform) == 'Win32' and $(IsUwp) == 'true'">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <Bitness>32-UWP</Bitness>
+    <ArchName>x86</ArchName>
+    <OpenSSLPlatform>VC-WIN32-UWP no-async no-uplink</OpenSSLPlatform>
+    <SupportSigning>true</SupportSigning>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Configuration" Condition="$(Platform) == 'x64' and $(IsUwp) == 'true'">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <Bitness>64-UWP</Bitness>
+    <ArchName>amd64</ArchName>
+    <OpenSSLPlatform>VC-WIN64A-UWP no-async no-uplink</OpenSSLPlatform>
+    <SupportSigning>true</SupportSigning>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Configuration" Condition="$(Platform) == 'ARM' and $(IsUwp) == 'true'">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <Bitness>ARM-UWP</Bitness>
+    <ArchName>ARM</ArchName>
+    <OpenSSLPlatform>VC-WIN32-ARM-UWP no-async no-uplink</OpenSSLPlatform>
+    <SupportSigning>true</SupportSigning>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Configuration" Condition="$(Platform) == 'ARM64' and $(IsUwp) == 'true'">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <Bitness>ARM64-UWP</Bitness>
+    <ArchName>ARM64</ArchName>
+    <OpenSSLPlatform>VC-WIN64-ARM-UWP no-async no-uplink</OpenSSLPlatform>
+    <SupportSigning>true</SupportSigning>
+  </PropertyGroup>
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Import Project="pyproject.props" />
 
@@ -67,7 +115,7 @@
 set VCINSTALLDIR=$(VCInstallDir)
 if not exist "$(IntDir.TrimEnd('\'))" mkdir "$(IntDir.TrimEnd('\'))"
 cd /D "$(IntDir.TrimEnd('\'))"
-$(Perl) "$(opensslDir)\configure" $(OpenSSLPlatform) no-asm
+$(Perl) "$(opensslDir)\configure" $(OpenSSLPlatform) no-asm no-uiconsole no-tests no-unit-test
 nmake
 </NMakeBuildCommandLine>
   </PropertyGroup>
