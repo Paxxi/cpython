@@ -1068,7 +1068,7 @@ static HANDLE hPython3 = (HANDLE)NULL;
 int
 _Py_CheckPython3(void)
 {
-#if MS_DESKTOP
+#ifdef MS_DESKTOP
     wchar_t py3path[MAXPATHLEN+1];
     wchar_t *s;
     if (python3_checked) {
