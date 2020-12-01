@@ -137,7 +137,7 @@ PyHKEY_ternaryFailureFunc(PyObject *ob1, PyObject *ob2, PyObject *ob3)
 static void
 PyHKEY_deallocFunc(PyObject *ob)
 {
-#ifdef MS_DEKSTOP
+#ifdef MS_DESKTOP
     /* Can not call PyHKEY_Close, as the ob->tp_type
        has already been cleared, thus causing the type
        check to fail!

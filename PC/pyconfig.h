@@ -85,7 +85,7 @@ WIN32 is still required for the locale module.
 #		define MS_DESKTOP
 #		undef MS_APP
 #	else
-#		undef MS_DEKSTOP
+#		undef MS_DESKTOP
 #		define MS_APP
 #	endif
 #endif
