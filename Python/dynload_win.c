@@ -206,22 +206,19 @@ dl_funcptr _PyImport_FindSharedFuncptrWindows(const char *prefix,
            ensure DLLs adjacent to the PYD are preferred. */
         Py_BEGIN_ALLOW_THREADS
 #ifdef MS_DESKTOP
-        hDLL = LoadLibraryExW(wpathname, NULL,
-                              LOAD_LIBRARY_SEARCH_DEFAULT_DIRS |
-                              LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
+          hDLL = LoadLibraryExW(wpathname, NULL,
+            LOAD_LIBRARY_SEARCH_DEFAULT_DIRS |
+            LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
 #else
-    PyThreadState* tstate = PyThreadState_Get();
+        wchar_t* programPath = Py_GetProgramFullPath();
 
-    if (tstate == NULL)
-      return NULL;
+        // LoadPackagedLibrary doesn't accept absolute paths so we need to trim
+        // the base path
+        prefix_length = wcsrchr(programPath, L'\\');
+        wpathname += (prefix_length - programPath);
+        wpathname++;
 
-    // LoadPackagedLibrary doesn't accept absolute paths so we need to trim
-    // the base path
-    prefix_length = wcsrchr(tstate->interp->config.executable, L'\\');
-    wpathname += (prefix_length - tstate->interp->config.executable);
-    wpathname++;
-
-		hDLL = LoadPackagedLibrary(wpathname, 0);
+        hDLL = LoadPackagedLibrary(wpathname, 0);
 #endif
         Py_END_ALLOW_THREADS
 #if HAVE_SXS
