@@ -1828,6 +1828,8 @@ features:
    Return a list containing the names of the entries in the directory given by
    *path*.  The list is in arbitrary order, and does not include the special
    entries ``'.'`` and ``'..'`` even if they are present in the directory.
+   If a file is removed from or added to the directory during the call of
+   this function, whether a name for that file be included is unspecified.
 
    *path* may be a :term:`path-like object`.  If *path* is of type ``bytes``
    (directly or indirectly through the :class:`PathLike` interface),
@@ -1858,7 +1860,7 @@ features:
       Accepts a :term:`path-like object`.
 
 
-.. function:: lstat(path, \*, dir_fd=None)
+.. function:: lstat(path, *, dir_fd=None)
 
    Perform the equivalent of an :c:func:`lstat` system call on the given path.
    Similar to :func:`~os.stat`, but does not follow symbolic links. Return a
@@ -2233,7 +2235,9 @@ features:
    Return an iterator of :class:`os.DirEntry` objects corresponding to the
    entries in the directory given by *path*. The entries are yielded in
    arbitrary order, and the special entries ``'.'`` and ``'..'`` are not
-   included.
+   included.  If a file is removed from or added to the directory after
+   creating the iterator, whether an entry for that file be included is
+   unspecified.
 
    Using :func:`scandir` instead of :func:`listdir` can significantly
    increase the performance of code that also needs file type or file
@@ -2363,7 +2367,7 @@ features:
       On the first, uncached call, a system call is required on Windows but
       not on Unix.
 
-   .. method:: is_dir(\*, follow_symlinks=True)
+   .. method:: is_dir(*, follow_symlinks=True)
 
       Return ``True`` if this entry is a directory or a symbolic link pointing
       to a directory; return ``False`` if the entry is or points to any other
@@ -2387,7 +2391,7 @@ features:
       This method can raise :exc:`OSError`, such as :exc:`PermissionError`,
       but :exc:`FileNotFoundError` is caught and not raised.
 
-   .. method:: is_file(\*, follow_symlinks=True)
+   .. method:: is_file(*, follow_symlinks=True)
 
       Return ``True`` if this entry is a file or a symbolic link pointing to a
       file; return ``False`` if the entry is or points to a directory or other
@@ -2417,7 +2421,7 @@ features:
       This method can raise :exc:`OSError`, such as :exc:`PermissionError`,
       but :exc:`FileNotFoundError` is caught and not raised.
 
-   .. method:: stat(\*, follow_symlinks=True)
+   .. method:: stat(*, follow_symlinks=True)
 
       Return a :class:`stat_result` object for this entry. This method
       follows symbolic links by default; to stat a symbolic link add the
@@ -2449,7 +2453,7 @@ features:
       for :class:`bytes` paths on Windows.
 
 
-.. function:: stat(path, \*, dir_fd=None, follow_symlinks=True)
+.. function:: stat(path, *, dir_fd=None, follow_symlinks=True)
 
    Get the status of a file or a file descriptor. Perform the equivalent of a
    :c:func:`stat` system call on the given path. *path* may be specified as
@@ -2983,7 +2987,10 @@ features:
    *filenames* is a list of the names of the non-directory files in *dirpath*.
    Note that the names in the lists contain no path components.  To get a full path
    (which begins with *top*) to a file or directory in *dirpath*, do
-   ``os.path.join(dirpath, name)``.
+   ``os.path.join(dirpath, name)``.  Whether or not the lists are sorted
+   depends on the file system.  If a file is removed from or added to the
+   *dirpath* directory during generating the lists, whether a name for that
+   file be included is unspecified.
 
    If optional argument *topdown* is ``True`` or not specified, the triple for a
    directory is generated before the triples for any of its subdirectories
@@ -3657,8 +3664,8 @@ written in Python, such as a mail server's external command delivery program.
    The positional-only arguments *path*, *args*, and *env* are similar to
    :func:`execve`.
 
-   The *path* parameter is the path to the executable file.The *path* should
-   contain a directory.Use :func:`posix_spawnp` to pass an executable file
+   The *path* parameter is the path to the executable file.  The *path* should
+   contain a directory.  Use :func:`posix_spawnp` to pass an executable file
    without directory.
 
    The *file_actions* argument may be a sequence of tuples describing actions
